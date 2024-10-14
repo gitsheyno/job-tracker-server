@@ -13,13 +13,29 @@ export const getUsers = () => {
   });
 };
 
-//TODO add filter and sort and limit
-export const getApplications = () => {
+export const getApplications = (query?: any) => {
+  let baseQuery = `SELECT * from APPLICATION`;
+  const params: string[] = [];
+
+  if (query) {
+    const filterConditions: string[] = [];
+
+    filterConditions.push(`position LIKE ?`);
+    params.push(`%${query.position}%`);
+
+    if (filterConditions.length > 0) {
+      baseQuery += ` WHERE ${filterConditions.join()}`;
+    }
+  }
+
+  console.log(baseQuery, params);
+
   return new Promise((resolve, reject) => {
-    db.all(`SELECT * FROM APPLICATION`, (err, users) => {
+    db.all(baseQuery, params, (err, users) => {
       if (err) {
         reject(err);
       } else {
+        console.log("users,", users);
         resolve(users);
       }
     });

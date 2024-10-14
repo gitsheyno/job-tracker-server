@@ -25,7 +25,8 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/app", async (req, res) => {
-  const ans = await getApplications();
+  console.log(req.query, "query");
+  const ans = await getApplications(req.query);
 
   console.log(ans, "res");
   res.json({ data: ans });
