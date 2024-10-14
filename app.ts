@@ -3,7 +3,9 @@ import morgan from "morgan";
 import {
   getApplications,
   RegisterApplications,
+  removeApplication,
   getUsers,
+  UpdateApplication,
 } from "./getApplications";
 
 const app = express();
@@ -37,5 +39,22 @@ app.post("/app", async (req, res) => {
 
   console.log(ans, "res");
   res.json({ data: ans });
+});
+
+app.patch("/app/:id", async (req, res) => {
+  console.log("id", req.params.id);
+  const result = await UpdateApplication(req.body);
+  console.log(result, "res");
+  res.json({ data: result });
+});
+
+app.delete("/app/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const result = await removeApplication(+id);
+  res.json({
+    message: `record ${id} is deleted`,
+    data: { result },
+  });
 });
 export default app;
