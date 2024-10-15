@@ -33,7 +33,8 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/app", async (req, res) => {
-  const ans = await getApplications(req.query);
+  const query = req.query.position;
+  const ans = await getApplications(query as string);
 
   res.json({ data: ans });
 });

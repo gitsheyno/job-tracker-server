@@ -13,7 +13,7 @@ export const getUsers = () => {
   });
 };
 
-export const getApplications = (query?: any) => {
+export const getApplications = (query?: string) => {
   let baseQuery = `SELECT * from APPLICATION`;
   const params: string[] = [];
 
@@ -21,14 +21,12 @@ export const getApplications = (query?: any) => {
     const filterConditions: string[] = [];
 
     filterConditions.push(`position LIKE ?`);
-    params.push(`%${query.position}%`);
+    params.push(`%${query}%`);
 
     if (filterConditions.length > 0) {
       baseQuery += ` WHERE ${filterConditions.join()}`;
     }
   }
-
-  console.log(baseQuery, params);
 
   return new Promise((resolve, reject) => {
     db.all(baseQuery, params, (err, users) => {
