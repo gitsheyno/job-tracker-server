@@ -7,8 +7,17 @@ import {
   getUsers,
   UpdateApplication,
 } from "./getApplications";
+import cors from "cors";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PATCH"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(morgan("dev"));
 
@@ -20,32 +29,25 @@ app.use((req, res, next) => {
 app.get("/", async (req, res) => {
   const ans = await getUsers();
 
-  console.log(ans, "res");
   res.json({ data: ans });
 });
 
 app.get("/app", async (req, res) => {
-  console.log(req.query, "query");
   const ans = await getApplications(req.query);
 
-  console.log(ans, "res");
   res.json({ data: ans });
 });
 
 app.post("/app", async (req, res) => {
   const body = req.body;
 
-  console.log("body", body);
   const ans = await RegisterApplications(body);
 
-  console.log(ans, "res");
   res.json({ data: ans });
 });
 
 app.patch("/app/:id", async (req, res) => {
-  console.log("id", req.params.id);
   const result = await UpdateApplication(req.body);
-  console.log(result, "res");
   res.json({ data: result });
 });
 
