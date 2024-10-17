@@ -13,18 +13,28 @@ export const getUsers = () => {
   });
 };
 
-export const getApplications = (query?: string) => {
+type M = {
+  position?: string;
+  limit?: string;
+};
+export const getApplications = (query?: M) => {
   let baseQuery = `SELECT * from APPLICATION`;
   const params: string[] = [];
-
   if (query) {
     const filterConditions: string[] = [];
 
-    filterConditions.push(`position LIKE ?`);
-    params.push(`%${query}%`);
+    if (query.position) {
+      filterConditions.push(`position LIKE ?`);
+      params.push(`%${query.position}%`);
+    }
+
+    if (query.limit) {
+      filterConditions.push(`stage = ?`);
+      params.push(`${query.limit}`);
+    }
 
     if (filterConditions.length > 0) {
-      baseQuery += ` WHERE ${filterConditions.join()}`;
+      baseQuery += ` WHERE ${filterConditions.join(" AND ")}`;
     }
   }
 
@@ -33,7 +43,6 @@ export const getApplications = (query?: string) => {
       if (err) {
         reject(err);
       } else {
-        console.log("users,", users);
         resolve(users);
       }
     });

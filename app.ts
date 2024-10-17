@@ -33,8 +33,10 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/app", async (req, res) => {
-  const query = req.query.position;
-  const ans = await getApplications(query as string);
+  const position = req.query.position as string;
+  const limit = req.query.limit as string;
+
+  const ans = await getApplications({ limit, position });
 
   res.json({ data: ans });
 });
