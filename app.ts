@@ -57,7 +57,7 @@ app.post("/app", async (req, res) => {
   const modified = {
     ...body,
     day: getCurrentDate(),
-    stage: "offer",
+    stage: "todo",
     id: 1,
   };
   const ans = await RegisterApplications(modified);
