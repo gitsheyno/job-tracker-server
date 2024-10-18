@@ -50,17 +50,18 @@ export const getApplications = (query?: M) => {
 };
 
 export const RegisterApplications = (data: any) => {
+  console.log(data, "data");
   return new Promise((resolve, reject) => {
-    const { companyName, stage, position, link, day, id } = data;
+    const { appId, companyName, stage, position, link, day, id } = data;
 
     const sql = `
-        INSERT INTO APPLICATION (companyName, stage, position, link, day, id)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO APPLICATION (appId, companyName, stage, position, link, day, id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
     db.all(
       sql,
-      [companyName, stage, position, link, day, id],
+      [appId, companyName, stage, position, link, day, id],
       function (err, applications) {
         if (err) {
           reject(err);

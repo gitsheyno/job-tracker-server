@@ -41,10 +41,26 @@ app.get("/app", async (req, res) => {
   res.json({ data: ans });
 });
 
+function getCurrentDate() {
+  const date = new Date();
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}.${month}.${year}`;
+}
+
 app.post("/app", async (req, res) => {
   const body = req.body;
 
-  const ans = await RegisterApplications(body);
+  const modified = {
+    ...body,
+    day: getCurrentDate(),
+    stage: "offer",
+    id: 1,
+  };
+  const ans = await RegisterApplications(modified);
 
   res.json({ data: ans });
 });
