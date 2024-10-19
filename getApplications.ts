@@ -73,31 +73,22 @@ export const RegisterApplications = (data: any) => {
   });
 };
 
-export const UpdateApplication = (data: any) => {
+export const UpdateApplication = (data: string, id: number) => {
+  console.log(data, id);
   return new Promise((resolve, reject) => {
-    const { companyName, stage, position, link, day, appId } = data;
-
     const sql = `
       UPDATE APPLICATION 
-      SET companyName = ?, 
-          stage = ?, 
-          position = ?, 
-          link = ?, 
-          day = ?
+      SET  stage = ?
       WHERE appId = ?
     `;
 
-    db.all(
-      sql,
-      [companyName, stage, position, link, day, appId],
-      function (err, apps) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(apps);
-        }
+    db.all(sql, [data, id], function (err, apps) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(apps);
       }
-    );
+    });
   });
 };
 

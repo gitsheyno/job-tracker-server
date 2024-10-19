@@ -66,7 +66,8 @@ app.post("/app", async (req, res) => {
 });
 
 app.patch("/app/:id", async (req, res) => {
-  const result = await UpdateApplication(req.body);
+  console.log(req.body, "check");
+  const result = await UpdateApplication(req.body.stage, +req.params.id);
   res.json({ data: result });
 });
 
