@@ -8,5 +8,3 @@ app.db-shm
 app.db-wal
 
 dist
-
-app.db
