@@ -15,7 +15,6 @@
     "@libsql/client": "^0.14.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.35.2",
     "express": "^4.21.1",
     "lodash.merge": "^4.6.2",
     "mongoose": "^8.6.2",
@@ -26,7 +25,6 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/morgan": "^1.9.9",
-    "drizzle-kit": "^0.26.2",
     "typescript": "^5.6.2"
   }
 }

@@ -1,38 +1,44 @@
-// import db from "./db";
-import { eq } from "drizzle-orm";
-import { db } from "./db/db";
-import { application } from "./db/schema";
-//TODO should be get user to do auth
-export const getUsers = () => {
-  return new Promise((resolve, reject) => {
-    // db.all(`SELECT * FROM User`, (err, users) => {
-    //   if (err) {
-    //     reject(err);
-    //   } else {
-    //     resolve(users);
-    //   }
-    // });
-  });
+import { createClient } from "@libsql/client";
+import "dotenv/config";
+
+// Initialize Turso client
+export const turso = createClient({
+  url: process.env.TURSO_DATABASE_URL!,
+  authToken: process.env.TURSO_AUTH_TOKEN!,
+});
+
+// Get all users
+export const getUsers = async () => {
+  try {
+    const result = await turso.execute("SELECT * FROM User");
+    return result.rows;
+  } catch (err) {
+    throw err;
+  }
 };
 
+// Type for query filtering
 type M = {
   position?: string;
   limit?: string;
 };
-export const getApplications = (query?: M) => {
+
+// Get applications with optional query filters
+export const getApplications = async (query?: M) => {
   let baseQuery = `SELECT * from APPLICATION`;
-  const params: string[] = [];
+  const args: Record<string, string> = {};
+
   if (query) {
     const filterConditions: string[] = [];
 
     if (query.position) {
-      filterConditions.push(`position LIKE ?`);
-      params.push(`%${query.position}%`);
+      filterConditions.push(`position LIKE :position`);
+      args.position = `%${query.position}%`;
     }
 
     if (query.limit) {
-      filterConditions.push(`stage = ?`);
-      params.push(`${query.limit}`);
+      filterConditions.push(`stage = :limit`);
+      args.limit = `${query.limit}`;
     }
 
     if (filterConditions.length > 0) {
@@ -40,46 +46,69 @@ export const getApplications = (query?: M) => {
     }
   }
 
-  return new Promise((resolve, reject) => {
-    // db.all(baseQuery, params, (err, users) => {
-    //   if (err) {
-    //     reject(err);
-    //   } else {
-    //     resolve(users);
-    //   }
-    // });
-  });
-};
-
-export const RegisterApplications = async (data: any) => {
-  console.log(data, "data");
-
-  const { appId, companyName, stage, position, link, day, id } = data;
-
   try {
-    const newApplication = await db.insert(application).values({
-      companyName,
-      stage,
-      position,
-      link,
-      day,
-      userId: id,
+    const result = await turso.execute({
+      sql: baseQuery,
+      args,
     });
-
-    return newApplication; // Return the result of the insert operation
+    return result.rows;
   } catch (err) {
-    console.error(`Error inserting application: ${err.message}`); // Log the error for debugging
-    throw new Error(`Error inserting application: ${err.message}`); // Re-throw the error for handling upstream
+    throw err;
   }
 };
 
-export const UpdateApplication = async (data: string, id: string) => {
-  const updated = await db
-    .update(application)
-    .set({ stage: data })
-    .where(eq(application.appId, id));
+// Register a new application
+export const RegisterApplications = async (data: any) => {
+  console.log(data, "data");
+  const { companyName, stage, position, link, day, id } = data;
+  const sql = `
+    INSERT INTO APPLICATION ( companyName, stage, position, link, day, id)
+    VALUES ( :companyName, :stage, :position, :link, :day, :id)
+  `;
+
+  try {
+    const result = await turso.execute({
+      sql,
+      args: { companyName, stage, position, link, day, id },
+    });
+    return result.rowsAffected; // Number of rows affected
+  } catch (err) {
+    throw err;
+  }
 };
 
-export const removeApplication = async (appId: string) => {
-  await db.delete(application).where(eq(application.appId, appId));
+// Update an existing application
+export const UpdateApplication = async (data: string, id: number) => {
+  const sql = `
+    UPDATE APPLICATION 
+    SET stage = :stage
+    WHERE appId = :appId
+  `;
+
+  try {
+    const result = await turso.execute({
+      sql,
+      args: { stage: data, appId: id },
+    });
+    return result.rowsAffected; // Number of rows affected
+  } catch (err) {
+    throw err;
+  }
+};
+
+// Remove an application
+export const removeApplication = async (appId: number) => {
+  const sql = `
+    DELETE FROM APPLICATION WHERE appId = :appId RETURNING *
+  `;
+
+  try {
+    const result = await turso.execute({
+      sql,
+      args: { appId },
+    });
+    return result.rows; // Returns the deleted row(s)
+  } catch (err) {
+    throw err;
+  }
 };

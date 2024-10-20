@@ -67,14 +67,14 @@ app.post("/app", async (req, res) => {
 
 app.patch("/app/:id", async (req, res) => {
   console.log(req.body, "check");
-  const result = await UpdateApplication(req.body.stage, req.params.id);
+  const result = await UpdateApplication(req.body.stage, +req.params.id);
   res.json({ data: result });
 });
 
 app.delete("/app/:id", async (req, res) => {
   const id = req.params.id;
 
-  const result = await removeApplication(id);
+  const result = await removeApplication(+id);
   res.json({
     message: `record ${id} is deleted`,
     data: { result },
